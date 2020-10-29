@@ -14,7 +14,7 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
-RoutingMap mainMap(50, 50);         //TODO: figure out how to create this in main but pass it to WndProc without a global
+RoutingMap mainMap(25, 25);         //TODO: figure out how to create this in main but pass it to WndProc without a global
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -105,7 +105,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, CW_USEDEFAULT, 1000, 750, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -114,6 +114,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+
+   //creating the generate map button
+   HWND mapButton = CreateWindow(
+       L"BUTTON",  // Predefined class; Unicode assumed 
+       L"Generate Map",      // Button text 
+       WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+       10,         // x position 
+       10,         // y position 
+       200,        // Button width
+       50,        // Button height
+       hWnd,     // Parent window
+       NULL,       // No menu.
+       (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+       NULL);      // Pointer not needed.
 
    return TRUE;
 }
@@ -135,6 +149,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
+            int test;
             // Parse the menu selections:
             switch (wmId)
             {
@@ -144,9 +159,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
+            //The case that a button was clicked
+            case BN_CLICKED:
+                //TODO: need to find the button's identifier to make sure I can have multiple on the screen
+                test = LOWORD(wParam);
+                /*switch (LOWORD(wParam)) {
+                case mapButton:
+                    OutputDebugString(_T("The button was clicked\n"));
+                    mainMap.generateMap();
+                    SendMessage(hWnd, WM_PAINT, 0, 0);
+                    break;
+                }*/
+                
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
+
         }
         break;
     case WM_PAINT:
@@ -154,7 +182,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
-            HPEN pen = CreatePen(PS_SOLID, 0.5, RGB(0,0,0));
+            HPEN pen = CreatePen(PS_SOLID, 1, RGB(0,0,0));
             SelectObject(hdc, pen);
             HBRUSH redBrush = CreateSolidBrush(RGB(255,0,0));
             HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0));
@@ -184,7 +212,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         SelectObject(hdc, yellowBrush);
                     }
                     //drawing the squares
-                    Rectangle(hdc,0 + (10 * i), 0 + (10 * j), 10 + (10 * i), 10 + (10 * j));
+                    Rectangle(hdc,10 + (10 * i), 70 + (10 * j), 20 + (10 * i), 80 + (10 * j));
                 }
             }
             EndPaint(hWnd, &ps);
