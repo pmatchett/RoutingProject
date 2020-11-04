@@ -1,16 +1,20 @@
 #include "RoutingMap.h"
 #include <ctime>
+#include "framework.h"
 
 RoutingMap::RoutingMap(int x, int y) {
 	xDim = x;
 	yDim = y;
+}
+
+int RoutingMap::generateMap() {
+	//deleting any previously existing map
+	deleteMap();
+	//setting the vector to the correct length
 	positions.resize(yDim);
 	for (int i = 0; i < yDim; i++) {
 		positions[i].resize(xDim);
 	}
-}
-
-int RoutingMap::generateMap() {
 	//seeding rand with the current time on the machine
 	srand(std::time(nullptr));
 	//select the starting and ending point
@@ -35,6 +39,13 @@ int RoutingMap::generateMap() {
 	}
 	
 	return 0;
+}
+
+void RoutingMap::deleteMap() {
+	for (int i = 0; i < positions.size(); i++) {
+		positions[i].erase(positions[i].begin(), positions[i].end());
+	}
+	positions.erase(positions.begin(), positions.end());
 }
 
 int RoutingMap::getPointStatus(int x, int y){

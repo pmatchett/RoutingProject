@@ -164,12 +164,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 //TODO: need to find the button's identifier to make sure I can have multiple on the screen
                 test = LOWORD(wParam);
                 /*switch (LOWORD(wParam)) {
-                case mapButton:
+                case mapButton:*/
                     OutputDebugString(_T("The button was clicked\n"));
                     mainMap.generateMap();
-                    SendMessage(hWnd, WM_PAINT, 0, 0);
+                    RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+                    //UpdateWindow(hWnd);
                     break;
-                }*/
+                //}
                 
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
