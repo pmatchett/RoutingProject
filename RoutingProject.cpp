@@ -8,6 +8,8 @@
 #include <vector>
 
 #define MAX_LOADSTRING 100
+#define MAPBUTTONID 0x8801
+#define ROUTEBUTTONID 0x8802
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -116,7 +118,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    UpdateWindow(hWnd);
 
    //creating the generate map button
-   HWND mapButton = CreateWindow(
+   HWND mapButton = CreateWindowEx(
+       0,
        L"BUTTON",  // Predefined class; Unicode assumed 
        L"Generate Map",      // Button text 
        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
@@ -125,7 +128,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
        200,        // Button width
        50,        // Button height
        hWnd,     // Parent window
-       NULL,       // No menu.
+       (HMENU) MAPBUTTONID,       // No menu.
+       (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+       NULL);      // Pointer not needed.
+
+   //creating the optimize route button
+   HWND routeButton = CreateWindow(
+       L"BUTTON",  // Predefined class; Unicode assumed 
+       L"Determine Route",      // Button text 
+       WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+       400,         // x position 
+       10,         // y position 
+       200,        // Button width
+       50,        // Button height
+       hWnd,     // Parent window
+       (HMENU)ROUTEBUTTONID,       // No menu. (id of the button)
        (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
        NULL);      // Pointer not needed.
 
@@ -149,7 +166,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
-            int test;
             // Parse the menu selections:
             switch (wmId)
             {
@@ -159,18 +175,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
-            //The case that a button was clicked
-            case BN_CLICKED:
+            //using HMENU id for buttons seems to overwrite BN_CLICKED message for it's own identifier, 
+            //not sure if this is the best way to keep things consistent (could mmake theHwnd of buttons global but that seems bad
+            //TODO: figure out best method to do this
+            
+            /*case BN_CLICKED:
                 //TODO: need to find the button's identifier to make sure I can have multiple on the screen
-                test = LOWORD(wParam);
-                /*switch (LOWORD(wParam)) {
-                case mapButton:*/
-                    OutputDebugString(_T("The button was clicked\n"));
-                    mainMap.generateMap();
-                    RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
-                    //UpdateWindow(hWnd);
-                    break;
-                //}
+                switch (wmId) {
+                    case MAPBUTTONID:
+                        OutputDebugString(_T("The button was clicked\n"));
+                        mainMap.generateMap();
+                        RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+                        break;
+                    default:
+                        OutputDebugString(_T("Unknown button clicked\n"));
+                }*/
+
+            case MAPBUTTONID:
+                OutputDebugString(_T("The map button was clicked\n"));
+                mainMap.generateMap(0.25);
+                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+                break;
+            case ROUTEBUTTONID:
+                OutputDebugString(_T("The route button was clicked\n"));
+                mainMap.generateMap(0.65);
+                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+                break;
                 
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);

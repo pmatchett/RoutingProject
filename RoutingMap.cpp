@@ -7,7 +7,7 @@ RoutingMap::RoutingMap(int x, int y) {
 	yDim = y;
 }
 
-int RoutingMap::generateMap() {
+int RoutingMap::generateMap(double obsPercent) {
 	//deleting any previously existing map
 	deleteMap();
 	//setting the vector to the correct length
@@ -27,17 +27,23 @@ int RoutingMap::generateMap() {
 	} while (endX == startX && endY == startY);
 	positions[startX][startY] = START;
 	positions[endX][endY] = END;
+	//generating what type of point each sqaure will be
 	int obstacle;
 	for (int i = 0; i < xDim; i++) {
 		for (int j = 0; j < yDim; j++) {
 			if ((i == startX && j == startY) || (i == endX && j == endY)) {
 				continue;
 			}
-			obstacle = rand() % 2;//this should be 0 or 1 
-			positions[i][j] = obstacle;
+			obstacle = (rand() % 100)+1;//this should be between 1 and 100 
+			//if the random value is less than the value specified for the obstacle percent set the sqaure as an obstacle
+			if (obstacle <= obsPercent * 100) {
+				positions[i][j] = 1;
+			}
+			else {
+				positions[i][j] = 0;
+			}
 		}
 	}
-	
 	return 0;
 }
 

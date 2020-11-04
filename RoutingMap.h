@@ -22,10 +22,12 @@ public:
 	int getX();
 	//gets the y dimension
 	int getY();
-	//use int as a error tester, maybe add arguments to modify map creation
+	//TODO: use int as a error tester, maybe add arguments to modify map creation
 	//generates a map with a random start and end points and random obstacles
-	//TODO: allow an argument that specifies likelihood of obstacles, so its not always 50/50 (set a default value)
-	int generateMap();
+	//arguments:
+	//	obsPercent: the percentage of squares that will be on average be obstacles (default value is 50%)
+	//		must be between 0 and 1, anyhting less than 0 will be considered as 0% and anything greater than 1 will be 100%
+	int generateMap(double obsPercent = 0.5);
 	//returns what style of coordinate this is
 	int getPointStatus(int x, int y);
 
