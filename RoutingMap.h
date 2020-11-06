@@ -2,16 +2,14 @@
 #ifndef ROUTINGMAPHEADER
 #define ROUTINGMAPHEADER
 #include <vector>
-#define FREE 0 
-#define OBSTACLE 1 
-#define START 2 
-#define END 3 
+#include "Node.h"
+
 
 class RoutingMap {
 private:
 	int xDim, yDim;
-	//each int represents a state: 0 = free, 1 = obstacle, 2 = start, 3 = end
-	std::vector<std::vector<int>> positions;
+	
+	std::vector<std::vector<Node*>> positions;
 	//removes all elements from the positions vector
 	void deleteMap();
 

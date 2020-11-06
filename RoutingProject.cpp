@@ -219,13 +219,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0));
             HBRUSH yellowBrush = CreateSolidBrush(RGB(255, 255, 0));
             HBRUSH whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-            //SelectObject(hdc, brush);
             //TCHAR testText[] = _T("this is test of hdc");
             //TextOut(hdc, 100, 100, testText, _tcslen(testText));
-            //POINT points[] = { {1,1}, {100,1}, {100,100}, {1,100} };
-            //SetPolyFillMode(hdc, WINDING);
-            //Rectangle(hdc, 1,1,100,100);
             //drawing the map to the gui
+            
+            //TODO: work on dynamically moving the map/buttons based off size of the map
             for (int i = 0; i < mainMap.getX(); i++) {
                 for (int j = 0; j < mainMap.getY(); j++) {
                     int status = mainMap.getPointStatus(i, j);

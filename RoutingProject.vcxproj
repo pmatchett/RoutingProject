@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Node.h" />
     <ClInclude Include="RoutingMap.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -146,6 +147,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="RoutingMap.cpp" />
     <ClCompile Include="RoutingProject.cpp" />
   </ItemGroup>

@@ -25,37 +25,42 @@ int RoutingMap::generateMap(double obsPercent) {
 		endX = rand() % xDim;
 		endY = rand() % yDim; 
 	} while (endX == startX && endY == startY);
-	positions[startX][startY] = START;
-	positions[endX][endY] = END;
 	//generating what type of point each sqaure will be
 	int obstacle;
 	for (int i = 0; i < xDim; i++) {
 		for (int j = 0; j < yDim; j++) {
-			if ((i == startX && j == startY) || (i == endX && j == endY)) {
-				continue;
+			if (i == startX && j == startY)  {
+				positions[i][j] = new Node(i, j, START);
 			}
-			obstacle = (rand() % 100)+1;//this should be between 1 and 100 
-			//if the random value is less than the value specified for the obstacle percent set the sqaure as an obstacle
-			if (obstacle <= obsPercent * 100) {
-				positions[i][j] = 1;
+			else if ((i == endX && j == endY)) {
+				positions[i][j] = new Node(i, j, END);
 			}
 			else {
-				positions[i][j] = 0;
+				obstacle = (rand() % 100) + 1;//this should be between 1 and 100 
+				//if the random value is less than the value specified for the obstacle percent set the sqaure as an obstacle
+				if (obstacle <= obsPercent * 100) {
+					positions[i][j] = new Node(i,j,OBSTACLE);
+				}
+				else {
+					positions[i][j] = new Node(i,j,FREE);
+				}
 			}
 		}
 	}
 	return 0;
 }
 
+//TODO: might need to fix this function to work with pointers
 void RoutingMap::deleteMap() {
 	for (int i = 0; i < positions.size(); i++) {
 		positions[i].erase(positions[i].begin(), positions[i].end());
 	}
 	positions.erase(positions.begin(), positions.end());
+	Node::resetCounter();
 }
 
 int RoutingMap::getPointStatus(int x, int y){
-	return positions[x][y];
+	return positions[x][y]->getStatus();
 }
 
 int RoutingMap::getX() {
