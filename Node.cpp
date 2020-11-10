@@ -3,7 +3,7 @@
 #include <iostream>
 #include <iomanip>
 
-//This source file was originally designed by me (Patrick) for the capstone project SAFE 
+//This source file was originally designed by me and a group mate (Patrick and Matt Kadatdz) for the capstone project SAFE 
 //and I am reusing most of the code with slight changes
 
 int Node::counter = 0;

@@ -1,5 +1,5 @@
 #pragma once
-//This header file was originally designed by me (Patrick) for the capstone project SAFE 
+//This header file was originally designed by me and a group mate (Patrick and Matt Kadatdz) for the capstone project SAFE 
 //and I am reusing most of the code with slight changes
 #include <windows.h>
 //the followings definitions are for the status of the node

@@ -2,6 +2,7 @@
 //
 
 #include "framework.h"
+#include "CommCtrl.h"
 #include "RoutingProject.h"
 #include "RoutingMap.h"
 #include <string>
@@ -17,6 +18,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 RoutingMap mainMap(25, 25);         //TODO: figure out how to create this in main but pass it to WndProc without a global
+HWND obsSlider;                     //TODO: figure out better way of passing the slider id between functions
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -146,6 +148,40 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
        (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
        NULL);      // Pointer not needed.
 
+
+   //TODO set up a text box, ideally with up-down controls to enter the percentage of obstacles desired (maybe use a slider)
+   //The text box where the user can input the percentage of squares that should be an obstacle
+   /*HWND percentObsWindow = CreateWindow(
+       L"EDIT",
+       NULL,
+       WS_BORDER | WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_NUMBER,
+       10,
+       70,
+       100,
+       23,
+       hWnd,
+       NULL, //might need to use this to give it an id
+       (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+       NULL);*/
+
+   //trying to make a slider
+   double maxSlide = 100;
+   double minSlide = 0;
+   double tickInterval = 0.1;
+   obsSlider = CreateWindow(
+       TRACKBAR_CLASS,
+       L"Amount Of Obstacles",
+       WS_CHILD | WS_VISIBLE | TBS_AUTOTICKS,
+       10,70,150,30,
+       hWnd,
+       NULL,
+       (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+       NULL);
+
+   SendMessage(obsSlider, TBM_SETRANGE, (WPARAM)true, (LPARAM)MAKELONG(minSlide, maxSlide)); // setting the max/min values of the slider
+   SendMessage(obsSlider, TBM_SETTICFREQ, (WPARAM)10, 0); //Setting the slider to have tics every 10 units
+   SendMessage(obsSlider, TBM_SETPOS, true, 25);
+
    return TRUE;
 }
 
@@ -166,6 +202,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
+            int sliderPosition;
             // Parse the menu selections:
             switch (wmId)
             {
@@ -193,7 +230,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             case MAPBUTTONID:
                 OutputDebugString(_T("The map button was clicked\n"));
-                mainMap.generateMap(0.25);
+                sliderPosition = SendMessage(obsSlider, TBM_GETPOS, 0, 0); //getting the positions of the slider to determine how many obstacles
+                mainMap.generateMap((double)sliderPosition/100);
                 RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
                 break;
             case ROUTEBUTTONID:
@@ -241,7 +279,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         SelectObject(hdc, yellowBrush);
                     }
                     //drawing the squares
-                    Rectangle(hdc,10 + (10 * i), 70 + (10 * j), 20 + (10 * i), 80 + (10 * j));
+                    Rectangle(hdc,10 + (10 * i), 100 + (10 * j), 20 + (10 * i), 110 + (10 * j));
                 }
             }
             EndPaint(hWnd, &ps);
