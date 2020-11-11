@@ -172,7 +172,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
        TRACKBAR_CLASS,
        L"Amount Of Obstacles",
        WS_CHILD | WS_VISIBLE | TBS_AUTOTICKS,
-       10,70,150,30,
+       10,80,200,30,
        hWnd,
        NULL,
        (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
@@ -180,7 +180,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    SendMessage(obsSlider, TBM_SETRANGE, (WPARAM)true, (LPARAM)MAKELONG(minSlide, maxSlide)); // setting the max/min values of the slider
    SendMessage(obsSlider, TBM_SETTICFREQ, (WPARAM)10, 0); //Setting the slider to have tics every 10 units
-   SendMessage(obsSlider, TBM_SETPOS, true, 25);
+   SendMessage(obsSlider, TBM_SETPOS, true, 25); //setting the default value to 25 percent
+
+   HWND sliderLabel = CreateWindow(
+       L"STATIC",
+       L"Amount Of Obstacles:",
+       WS_CHILD | WS_VISIBLE | SS_LEFT,
+       10, 65, 150, 15,
+       hWnd,
+       NULL,
+       (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+       NULL);
 
    return TRUE;
 }
@@ -251,6 +261,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
+            //adding the labels to the slider (might be a better place to put this)
             HPEN pen = CreatePen(PS_SOLID, 1, RGB(0,0,0));
             SelectObject(hdc, pen);
             HBRUSH redBrush = CreateSolidBrush(RGB(255,0,0));
@@ -279,7 +290,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         SelectObject(hdc, yellowBrush);
                     }
                     //drawing the squares
-                    Rectangle(hdc,10 + (10 * i), 100 + (10 * j), 20 + (10 * i), 110 + (10 * j));
+                    Rectangle(hdc,10 + (10 * i), 130 + (10 * j), 20 + (10 * i), 140 + (10 * j));
                 }
             }
             EndPaint(hWnd, &ps);
