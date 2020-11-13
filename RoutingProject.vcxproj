@@ -144,12 +144,14 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RoutingProject.h" />
+    <ClInclude Include="StaticRouter.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="RoutingMap.cpp" />
     <ClCompile Include="RoutingProject.cpp" />
+    <ClCompile Include="StaticRouter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RoutingProject.rc" />
