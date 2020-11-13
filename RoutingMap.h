@@ -7,7 +7,7 @@
 
 class RoutingMap {
 private:
-	int xDim, yDim;
+	int xDim, yDim, numNodes;
 	
 	std::vector<std::vector<Node*>> positions;
 	//removes all elements from the positions vector
@@ -28,6 +28,10 @@ public:
 	int generateMap(double obsPercent = 0.5);
 	//returns what style of coordinate this is
 	int getPointStatus(int x, int y);
+	//returns the number of nodes that are currently in the map
+	int getNumNodes();
+	//returns a vector with all of the nodes adjacent to the argument node
+	std::vector<Node*> getNeighbours(Node* center);
 
 };
 

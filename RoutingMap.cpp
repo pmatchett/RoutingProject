@@ -5,6 +5,7 @@
 RoutingMap::RoutingMap(int x, int y) {
 	xDim = x;
 	yDim = y;
+	numNodes = x * y;
 }
 
 int RoutingMap::generateMap(double obsPercent) {
@@ -57,6 +58,26 @@ void RoutingMap::deleteMap() {
 	}
 	positions.erase(positions.begin(), positions.end());
 	Node::resetCounter();
+}
+
+int RoutingMap::getNumNodes() {
+	return numNodes;
+}
+
+std::vector<Node*> RoutingMap::getNeighbours(Node* center)
+{
+	std::vector<Node*> neighbours;
+	int x = center->getxCoord();
+	int y = center->getyCoord();
+	for (int i = x - 1; i <= x + 1; i++) {
+		for (int j = y - 1; j <= y + 1; j++) {
+			//do not add nodes that are outside the boundaries of the map or the current Node
+			if (i < 0 || i >= xDim || j < 0 || j >= yDim || (i == x && j == y)) {
+				continue;
+			}
+			neighbours.push_back(positions[i][j]);
+		}
+	}return neighbours;
 }
 
 int RoutingMap::getPointStatus(int x, int y){

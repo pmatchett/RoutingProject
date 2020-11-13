@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 #include "RoutingMap.h"
+
+//This header file was originally designed by me and a group mate (Patrick and Matt Kadatdz) for the capstone project SAFE 
+//and I am reusing most of the code with slight changes
 class StaticRouter
 {
 private:
