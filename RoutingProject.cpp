@@ -5,6 +5,7 @@
 #include "CommCtrl.h"
 #include "RoutingProject.h"
 #include "RoutingMap.h"
+#include "StaticRouter.h"
 #include <string>
 #include <vector>
 
@@ -18,6 +19,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 RoutingMap mainMap(25, 25);         //TODO: figure out how to create this in main but pass it to WndProc without a global
+StaticRouter mainRouter(&mainMap);  //TODO: figure out how to create this in main but pass it to WndProc without a global
 HWND obsSlider;                     //TODO: figure out better way of passing the slider id between functions
 
 // Forward declarations of functions included in this code module:
@@ -213,6 +215,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             int wmId = LOWORD(wParam);
             int sliderPosition;
+            int testReturnValue;
             // Parse the menu selections:
             switch (wmId)
             {
@@ -246,8 +249,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case ROUTEBUTTONID:
                 OutputDebugString(_T("The route button was clicked\n"));
-                mainMap.generateMap(0.65);
-                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+                mainRouter.setEnd(mainMap.getEnd());
+                mainRouter.setStart(mainMap.getStart());
+                testReturnValue = mainRouter.optimizePath();
+                if (testReturnValue == 0) {
+                    OutputDebugString(_T("A path was found\n"));
+                }
+                else if (testReturnValue == 1) {
+                    OutputDebugString(_T("No path could be found\n"));
+                }
                 break;
                 
             default:

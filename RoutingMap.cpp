@@ -6,6 +6,8 @@ RoutingMap::RoutingMap(int x, int y) {
 	xDim = x;
 	yDim = y;
 	numNodes = x * y;
+	start = nullptr;
+	end = nullptr;
 }
 
 int RoutingMap::generateMap(double obsPercent) {
@@ -32,9 +34,11 @@ int RoutingMap::generateMap(double obsPercent) {
 		for (int j = 0; j < yDim; j++) {
 			if (i == startX && j == startY)  {
 				positions[i][j] = new Node(i, j, START);
+				start = positions[i][j];
 			}
 			else if ((i == endX && j == endY)) {
 				positions[i][j] = new Node(i, j, END);
+				end = positions[i][j];
 			}
 			else {
 				obstacle = (rand() % 100) + 1;//this should be between 1 and 100 
@@ -78,6 +82,16 @@ std::vector<Node*> RoutingMap::getNeighbours(Node* center)
 			neighbours.push_back(positions[i][j]);
 		}
 	}return neighbours;
+}
+
+Node* RoutingMap::getEnd()
+{
+	return end;
+}
+
+Node* RoutingMap::getStart()
+{
+	return start;
 }
 
 int RoutingMap::getPointStatus(int x, int y){

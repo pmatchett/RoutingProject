@@ -1,5 +1,6 @@
 #include "StaticRouter.h"
 #include "framework.h"
+#include <cstdio>
 
 //This source file was originally designed by me and a group mate (Patrick and Matt Kadatdz) for the capstone project SAFE 
 //and I am reusing most of the code with slight changes
@@ -22,6 +23,7 @@ int StaticRouter::optimizePath()
 		OutputDebugString(_T("The start or end points are invalid\n"));
 		return 1;
 	}
+	OutputDebugString(_T("starting route creation\n"));
 	//placing the start node
 	openList.push_back(startPoint);
 	//while there is at least one node on the open list keep looking (this means there is atleast one path not yet explored)
@@ -39,6 +41,9 @@ int StaticRouter::optimizePath()
 				index = i;
 			}
 		}
+		wchar_t asd[100];
+		wsprintfW(asd, L"checking Node %d \n", testNode->getId());
+		OutputDebugString(asd);
 		//at this point the next optimal node has been selected to investigate a path originating from it
 		//removing the node we are investigating from the openList
 		openList.erase(openList.begin() + index);
@@ -49,9 +54,29 @@ int StaticRouter::optimizePath()
 		}
 		//the end point has not been reached, so now we check the node's neighbours to find the next node of interest
 		std::vector<Node*> neighbours = map->getNeighbours(testNode);
+		//looping through all of the nieghbours and adding them to the open list, or changing the heuristics if a better path was found
+		for (int i = 0; i < neighbours.size(); i++) {
+			//skipping the node if it is already on the closed list (we have already visited it) or is an obstacle
+			if (neighbours[i]->getStatus() == OBSTACLE && closedList[neighbours[i]->getId()]) {
+				continue;
+			}
+			//if the node is already on the openList check if this new path is faster
+			double newDistance = (testNode->getDistanceTravelled() + (neighbours[i] - testNode));
+			if (onOpen(neighbours[i])) {
+				if (newDistance < neighbours[i]->getDistanceTravelled()) {
+					neighbours[i]->setDistanceTravelled(newDistance);
+					neighbours[i]->setPrev(testNode);
+				}
+			}
+			else {
+				neighbours[i]->setDistanceTravelled(newDistance);
+				neighbours[i]->setPrev(testNode);
+				openList.push_back(neighbours[i]);
+			}
+		}
 	}
 
-	return 0;
+	return 1;
 }
 
 void StaticRouter::setStart(Node* start)
@@ -83,6 +108,11 @@ double StaticRouter::calculateDistance(Node* current)
 
 bool StaticRouter::onOpen(Node* current)
 {
+	for (int i = 0; i < openList.size(); i++) {
+		if (current->getId() == openList[i]->getId()) {
+			return true;
+		}
+	}
 	return false;
 }
 

@@ -8,6 +8,8 @@
 class RoutingMap {
 private:
 	int xDim, yDim, numNodes;
+
+	Node* start, *end;
 	
 	std::vector<std::vector<Node*>> positions;
 	//removes all elements from the positions vector
@@ -32,6 +34,10 @@ public:
 	int getNumNodes();
 	//returns a vector with all of the nodes adjacent to the argument node
 	std::vector<Node*> getNeighbours(Node* center);
+
+	Node* getEnd();
+
+	Node* getStart();
 
 };
 
