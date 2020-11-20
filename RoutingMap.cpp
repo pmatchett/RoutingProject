@@ -68,6 +68,7 @@ int RoutingMap::getNumNodes() {
 	return numNodes;
 }
 
+//TODO: should diagonals be allowed
 std::vector<Node*> RoutingMap::getNeighbours(Node* center)
 {
 	std::vector<Node*> neighbours;
@@ -97,6 +98,7 @@ Node* RoutingMap::getStart()
 int RoutingMap::getPointStatus(int x, int y){
 	return positions[x][y]->getStatus();
 }
+
 
 int RoutingMap::getX() {
 	return xDim;

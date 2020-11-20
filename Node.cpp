@@ -16,7 +16,7 @@ Node::Node(int x, int y, int type)
 	id = Node::counter;
 	distanceWeight = -1;
 	distanceTravelled = 0;
-	totalHeuristic = 0;
+	totalHeuristic = -1;
 	prevNode = nullptr;
 	//incrementing the static counter for nodes
 	Node::counter++;
@@ -83,6 +83,13 @@ double Node::getDistanceTravelled() {
 
 void Node::setDistanceTravelled(double num) {
 	distanceTravelled = num;
+}
+
+double Node::euclideanDistance(Node* other)
+{
+	double xDist = abs(this->coordinates.x - other->coordinates.x);
+	double yDist = abs(this->coordinates.y - other->coordinates.y);
+	return sqrt(pow(xDist, 2) + pow(yDist, 2));
 }
 
 double Node::operator- (Node* rhs) {

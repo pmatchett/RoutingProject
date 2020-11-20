@@ -73,6 +73,8 @@ public:
     //sets the total distance traveled to ge to this node
     void setDistanceTravelled(double num);
 
+    double euclideanDistance(Node* other);
+
     //Overloading the - operator, returns the euclidean distance between two nodes
     double operator- (Node* rhs);
 
