@@ -274,7 +274,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // TODO: Add any drawing code that uses hdc here...
             //adding the labels to the slider (might be a better place to put this)
             HPEN pen = CreatePen(PS_SOLID, 1, RGB(0,0,0));
-            HPEN penPathed = CreatePen(PS_SOLID, 1, RGB(123, 231, 54));
+            HPEN penPathed = CreatePen(PS_SOLID, 2, RGB(64, 0, 255));
             SelectObject(hdc, pen);
             HBRUSH redBrush = CreateSolidBrush(RGB(255,0,0));
             HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0));
@@ -300,6 +300,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     }
                     else if (status == END) {
                         SelectObject(hdc, yellowBrush);
+                    }
+                    //choosing the pen based off if the point is in the path
+                    if (mainMap.getPointIncluded(i,j)) {
+                        SelectObject(hdc, penPathed);
                     }
                     else {
                         SelectObject(hdc, pen);

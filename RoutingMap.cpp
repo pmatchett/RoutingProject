@@ -19,7 +19,7 @@ int RoutingMap::generateMap(double obsPercent) {
 		positions[i].resize(xDim);
 	}
 	//seeding rand with the current time on the machine
-	srand(std::time(nullptr));
+	srand((uint16_t)std::time(nullptr));
 	//select the starting and ending point
 	int startX = rand() % xDim;
 	int startY = rand() % yDim;
@@ -57,7 +57,7 @@ int RoutingMap::generateMap(double obsPercent) {
 
 //TODO: might need to fix this function to work with pointers
 void RoutingMap::deleteMap() {
-	for (int i = 0; i < positions.size(); i++) {
+	for (uint8_t i = 0; i < positions.size(); i++) {
 		positions[i].erase(positions[i].begin(), positions[i].end());
 	}
 	positions.erase(positions.begin(), positions.end());
@@ -97,6 +97,10 @@ Node* RoutingMap::getStart()
 
 int RoutingMap::getPointStatus(int x, int y){
 	return positions[x][y]->getStatus();
+}
+
+bool RoutingMap::getPointIncluded(int x, int y) {
+	return positions[x][y]->getIncluded();
 }
 
 

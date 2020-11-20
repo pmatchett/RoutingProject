@@ -51,6 +51,7 @@ int StaticRouter::optimizePath()
 		//placing the node on the closed list so that it is not visited again
 		closedList[testNode->getId()] = true;
 		if (isEnd(testNode)) {
+			tracePath();
 			return 0;
 		}
 		//the end point has not been reached, so now we check the node's neighbours to find the next node of interest
@@ -119,6 +120,12 @@ bool StaticRouter::onOpen(Node* current)
 
 void StaticRouter::tracePath()
 {
+	//starting at the end point work back from previous node pointer to set all of the flags necessary
+	Node* current = endPoint;
+	while (current != nullptr) {
+		current->setIncluded(true);
+		current = current->getPrev();
+	}
 }
 
 void StaticRouter::reset()
@@ -129,7 +136,6 @@ void StaticRouter::reset()
 	for (int i = 0; i < map->getNumNodes(); i++) {
 		closedList.push_back(false);
 	}
-
 }
 
 bool StaticRouter::doubleCompare(double first, double second)

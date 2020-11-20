@@ -29,7 +29,7 @@ private:
     //current = node that will be checked for the open list
     //returns true if the node is on the open list
     bool onOpen(Node* current);
-    //traces the path found, console debugging function
+    //Set the included flag on all nodes included in the path
     void tracePath();
     //function that resets the routeplanner for a new route
     void reset();

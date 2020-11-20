@@ -30,6 +30,8 @@ public:
 	int generateMap(double obsPercent = 0.5);
 	//returns what style of coordinate this is
 	int getPointStatus(int x, int y);
+	//returns if a point is included in the final route
+	bool getPointIncluded(int x, int y);
 	//returns the number of nodes that are currently in the map
 	int getNumNodes();
 	//returns a vector with all of the nodes adjacent to the argument node

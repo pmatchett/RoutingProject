@@ -18,6 +18,7 @@ Node::Node(int x, int y, int type)
 	distanceTravelled = 0;
 	totalHeuristic = -1;
 	prevNode = nullptr;
+	includedPath = false;
 	//incrementing the static counter for nodes
 	Node::counter++;
 }
@@ -96,4 +97,14 @@ double Node::operator- (Node* rhs) {
 	double xDist = abs(this->coordinates.x - rhs->coordinates.x);
 	double yDist = abs(this->coordinates.y - rhs->coordinates.y);
 	return sqrt(pow(xDist, 2) + pow(yDist, 2));
+}
+
+bool Node::getIncluded()
+{
+	return includedPath;
+}
+
+void Node::setIncluded(bool include)
+{
+	includedPath = include;
 }
