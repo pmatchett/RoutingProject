@@ -5,6 +5,7 @@
 #include "CommCtrl.h"
 #include "RoutingProject.h"
 #include "RoutingMap.h"
+#include "StaticRouter.h"
 #include <string>
 #include <vector>
 
@@ -18,6 +19,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 RoutingMap mainMap(25, 25);         //TODO: figure out how to create this in main but pass it to WndProc without a global
+StaticRouter mainRouter(&mainMap);  //TODO: figure out how to create this in main but pass it to WndProc without a global
 HWND obsSlider;                     //TODO: figure out better way of passing the slider id between functions
 
 // Forward declarations of functions included in this code module:
@@ -213,6 +215,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             int wmId = LOWORD(wParam);
             int sliderPosition;
+            int testReturnValue;
             // Parse the menu selections:
             switch (wmId)
             {
@@ -246,7 +249,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case ROUTEBUTTONID:
                 OutputDebugString(_T("The route button was clicked\n"));
-                mainMap.generateMap(0.65);
+                mainRouter.setEnd(mainMap.getEnd());
+                mainRouter.setStart(mainMap.getStart());
+                testReturnValue = mainRouter.optimizePath();
+                if (testReturnValue == 0) {
+                    OutputDebugString(_T("A path was found\n"));
+                }
+                else if (testReturnValue == 1) {
+                    OutputDebugString(_T("No path could be found\n"));
+                }
                 RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
                 break;
                 
@@ -263,6 +274,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // TODO: Add any drawing code that uses hdc here...
             //adding the labels to the slider (might be a better place to put this)
             HPEN pen = CreatePen(PS_SOLID, 1, RGB(0,0,0));
+            HPEN penPathed = CreatePen(PS_SOLID, 2, RGB(64, 0, 255));
             SelectObject(hdc, pen);
             HBRUSH redBrush = CreateSolidBrush(RGB(255,0,0));
             HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0));
@@ -288,6 +300,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     }
                     else if (status == END) {
                         SelectObject(hdc, yellowBrush);
+                    }
+                    //choosing the pen based off if the point is in the path
+                    if (mainMap.getPointIncluded(i,j)) {
+                        SelectObject(hdc, penPathed);
+                    }
+                    else {
+                        SelectObject(hdc, pen);
                     }
                     //drawing the squares
                     Rectangle(hdc,10 + (10 * i), 130 + (10 * j), 20 + (10 * i), 140 + (10 * j));

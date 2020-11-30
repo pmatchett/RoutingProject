@@ -5,6 +5,9 @@
 RoutingMap::RoutingMap(int x, int y) {
 	xDim = x;
 	yDim = y;
+	numNodes = x * y;
+	start = nullptr;
+	end = nullptr;
 }
 
 int RoutingMap::generateMap(double obsPercent) {
@@ -16,7 +19,7 @@ int RoutingMap::generateMap(double obsPercent) {
 		positions[i].resize(xDim);
 	}
 	//seeding rand with the current time on the machine
-	srand(std::time(nullptr));
+	srand((uint16_t)std::time(nullptr));
 	//select the starting and ending point
 	int startX = rand() % xDim;
 	int startY = rand() % yDim;
@@ -31,9 +34,11 @@ int RoutingMap::generateMap(double obsPercent) {
 		for (int j = 0; j < yDim; j++) {
 			if (i == startX && j == startY)  {
 				positions[i][j] = new Node(i, j, START);
+				start = positions[i][j];
 			}
 			else if ((i == endX && j == endY)) {
 				positions[i][j] = new Node(i, j, END);
+				end = positions[i][j];
 			}
 			else {
 				obstacle = (rand() % 100) + 1;//this should be between 1 and 100 
@@ -52,16 +57,52 @@ int RoutingMap::generateMap(double obsPercent) {
 
 //TODO: might need to fix this function to work with pointers
 void RoutingMap::deleteMap() {
-	for (int i = 0; i < positions.size(); i++) {
+	for (uint8_t i = 0; i < positions.size(); i++) {
 		positions[i].erase(positions[i].begin(), positions[i].end());
 	}
 	positions.erase(positions.begin(), positions.end());
 	Node::resetCounter();
 }
 
+int RoutingMap::getNumNodes() {
+	return numNodes;
+}
+
+//TODO: should diagonals be allowed
+std::vector<Node*> RoutingMap::getNeighbours(Node* center)
+{
+	std::vector<Node*> neighbours;
+	int x = center->getxCoord();
+	int y = center->getyCoord();
+	for (int i = x - 1; i <= x + 1; i++) {
+		for (int j = y - 1; j <= y + 1; j++) {
+			//do not add nodes that are outside the boundaries of the map or the current Node
+			if (i < 0 || i >= xDim || j < 0 || j >= yDim || (i == x && j == y)) {
+				continue;
+			}
+			neighbours.push_back(positions[i][j]);
+		}
+	}return neighbours;
+}
+
+Node* RoutingMap::getEnd()
+{
+	return end;
+}
+
+Node* RoutingMap::getStart()
+{
+	return start;
+}
+
 int RoutingMap::getPointStatus(int x, int y){
 	return positions[x][y]->getStatus();
 }
+
+bool RoutingMap::getPointIncluded(int x, int y) {
+	return positions[x][y]->getIncluded();
+}
+
 
 int RoutingMap::getX() {
 	return xDim;
