@@ -12,6 +12,7 @@
 #define MAX_LOADSTRING 100
 #define MAPBUTTONID 0x8801
 #define ROUTEBUTTONID 0x8802
+#define COMBOBOXID 0x8803
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -194,6 +195,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
        (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
        NULL);
 
+   //creating the combo box to select what type of routing to use
+   HWND comboBox = CreateWindow(
+       WC_COMBOBOX,
+       L"Type of Solver",
+       WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_HASSTRINGS,
+       400, 80, 200, 75,
+       hWnd,
+       (HMENU) COMBOBOXID,
+       (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+       NULL);
+   //adding the options to the combo box
+   SendMessage(comboBox, CB_ADDSTRING, (WPARAM)0, (LPARAM)L"Static Solver");
+   SendMessage(comboBox, CB_ADDSTRING, (WPARAM)0, (LPARAM)L"Dynamic Solver");
+   SendMessage(comboBox, CB_SETCURSEL, (WPARAM)0, (LPARAM) 0);
+
    return TRUE;
 }
 
@@ -213,6 +229,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_COMMAND:
         {
+            TCHAR solverType[50];
             int wmId = LOWORD(wParam);
             int sliderPosition;
             int testReturnValue;
@@ -227,10 +244,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             //using HMENU id for buttons seems to overwrite BN_CLICKED message for it's own identifier, 
             //not sure if this is the best way to keep things consistent (could mmake theHwnd of buttons global but that seems bad
-            //TODO: figure out best method to do this
+            //TODO: figure out best method to do this (could use GetDlgItem like when getting the comboBox in the route button)
             
             /*case BN_CLICKED:
-                //TODO: need to find the button's identifier to make sure I can have multiple on the screen
                 switch (wmId) {
                     case MAPBUTTONID:
                         OutputDebugString(_T("The button was clicked\n"));
@@ -249,6 +265,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case ROUTEBUTTONID:
                 OutputDebugString(_T("The route button was clicked\n"));
+                //getting the solver type 
+                GetDlgItemText(hWnd, COMBOBOXID, solverType, 49); //TODO: see if this function could be used for the buttons
+                if (wcscmp(solverType, L"Static Solver") == 0) {
+                    OutputDebugString(_T("Using the static solver\n"));
+                }
+                else if (wcscmp(solverType, L"Dynamic Solver") == 0) {
+                    OutputDebugString(_T("Using the dynamic solver\n"));
+                }
+                else {
+                    OutputDebugString(_T("unrecognized solver\n"));
+                }
                 mainRouter.setEnd(mainMap.getEnd());
                 mainRouter.setStart(mainMap.getStart());
                 testReturnValue = mainRouter.optimizePath();

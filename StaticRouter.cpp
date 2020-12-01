@@ -43,8 +43,6 @@ int StaticRouter::optimizePath()
 			}
 		}
 		wchar_t asd[100];
-		wsprintfW(asd, L"checking Node %d\n", testNode->getId());
-		OutputDebugString(asd);
 		//at this point the next optimal node has been selected to investigate a path originating from it
 		//removing the node we are investigating from the openList
 		openList.erase(openList.begin() + index);
