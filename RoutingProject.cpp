@@ -13,6 +13,7 @@
 #define MAPBUTTONID 0x8801
 #define ROUTEBUTTONID 0x8802
 #define COMBOBOXID 0x8803
+#define SLIDERID 0x8804
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -21,7 +22,6 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 RoutingMap mainMap(25, 25);         //TODO: figure out how to create this in main but pass it to WndProc without a global
 StaticRouter mainRouter(&mainMap);  //TODO: figure out how to create this in main but pass it to WndProc without a global
-HWND obsSlider;                     //TODO: figure out better way of passing the slider id between functions
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -171,13 +171,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    double maxSlide = 100;
    double minSlide = 0;
    double tickInterval = 0.1;
-   obsSlider = CreateWindow(
+   HWND obsSlider = CreateWindow(
        TRACKBAR_CLASS,
        L"Amount Of Obstacles",
        WS_CHILD | WS_VISIBLE | TBS_AUTOTICKS,
        10,80,200,30,
        hWnd,
-       NULL,
+       (HMENU) SLIDERID,
        (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
        NULL);
 
@@ -229,10 +229,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_COMMAND:
         {
-            TCHAR solverType[50];
             int wmId = LOWORD(wParam);
-            int sliderPosition;
-            int testReturnValue;
             // Parse the menu selections:
             switch (wmId)
             {
@@ -257,15 +254,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         OutputDebugString(_T("Unknown button clicked\n"));
                 }*/
 
-            case MAPBUTTONID:
+            case MAPBUTTONID: {
                 OutputDebugString(_T("The map button was clicked\n"));
-                sliderPosition = SendMessage(obsSlider, TBM_GETPOS, 0, 0); //getting the positions of the slider to determine how many obstacles
-                mainMap.generateMap((double)sliderPosition/100);
+                HWND obsSlider = GetDlgItem(hWnd, SLIDERID);
+                int sliderPosition = SendMessage(obsSlider, TBM_GETPOS, 0, 0); //getting the positions of the slider to determine how many obstacles
+                mainMap.generateMap((double)sliderPosition / 100);
                 RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
                 break;
-            case ROUTEBUTTONID:
+            }
+            case ROUTEBUTTONID: {
                 OutputDebugString(_T("The route button was clicked\n"));
                 //getting the solver type 
+                TCHAR solverType[50];
                 GetDlgItemText(hWnd, COMBOBOXID, solverType, 49); //TODO: see if this function could be used for the buttons
                 if (wcscmp(solverType, L"Static Solver") == 0) {
                     OutputDebugString(_T("Using the static solver\n"));
@@ -278,7 +278,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 mainRouter.setEnd(mainMap.getEnd());
                 mainRouter.setStart(mainMap.getStart());
-                testReturnValue = mainRouter.optimizePath();
+                int testReturnValue = mainRouter.optimizePath();
                 if (testReturnValue == 0) {
                     OutputDebugString(_T("A path was found\n"));
                 }
@@ -287,7 +287,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
                 break;
-                
+            }
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
