@@ -19,6 +19,7 @@ int StaticRouter::optimizePath()
 {
 	//resetting the previous path so that it does not mess with the new one
 	reset();
+	setMapStartEnd();
 	//making sure the start and end points are not within obstacles;
 	if (startPoint->getStatus() == OBSTACLE || endPoint->getStatus() == OBSTACLE) {
 		OutputDebugString(_T("The start or end points are invalid\n"));
@@ -42,7 +43,6 @@ int StaticRouter::optimizePath()
 				index = i;
 			}
 		}
-		wchar_t asd[100];
 		//at this point the next optimal node has been selected to investigate a path originating from it
 		//removing the node we are investigating from the openList
 		openList.erase(openList.begin() + index);
@@ -139,6 +139,12 @@ void StaticRouter::reset()
 bool StaticRouter::doubleCompare(double first, double second)
 {
 	return abs(first-second) < 0.00001;
+}
+
+void StaticRouter::setMapStartEnd()
+{
+	startPoint = map->getStart();
+	endPoint = map->getEnd();
 }
 
 

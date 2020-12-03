@@ -28,8 +28,12 @@ public:
 	//	obsPercent: the percentage of squares that will be on average be obstacles (default value is 50%)
 	//		must be between 0 and 1, anyhting less than 0 will be considered as 0% and anything greater than 1 will be 100%
 	int generateMap(double obsPercent = 0.5);
+	//generates an empty map (no obstacles or start/end points)
+	int generateEmpty();
 	//returns what style of coordinate this is
 	int getPointStatus(int x, int y);
+	//Sets the status of a given point on the map
+	void setPointStatus(int x, int y, int status);
 	//returns if a point is included in the final route
 	bool getPointIncluded(int x, int y);
 	//returns the number of nodes that are currently in the map
@@ -40,6 +44,10 @@ public:
 	Node* getEnd();
 
 	Node* getStart();
+
+	//the set start and end functions will only work if the start or end are not yet defined (used for empy maps)
+	void setStart(int x, int y);
+	void setEnd(int x, int y);
 
 };
 

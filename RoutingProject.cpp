@@ -6,6 +6,7 @@
 #include "RoutingProject.h"
 #include "RoutingMap.h"
 #include "StaticRouter.h"
+#include "DynamicRouter.h"
 #include <string>
 #include <vector>
 
@@ -21,13 +22,17 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 RoutingMap mainMap(25, 25);         //TODO: figure out how to create this in main but pass it to WndProc without a global
+RoutingMap visibleMap(25, 25);
 StaticRouter mainRouter(&mainMap);  //TODO: figure out how to create this in main but pass it to WndProc without a global
+DynamicRouter dynRouter(&mainMap, &visibleMap, 6);
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+void drawMap(HDC hdc, RoutingMap* map, int xOffset);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -40,6 +45,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: Place code here.
     //generating the map
     mainMap.generateMap();
+    visibleMap.generateEmpty();
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -255,15 +261,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }*/
 
             case MAPBUTTONID: {
-                OutputDebugString(_T("The map button was clicked\n"));
                 HWND obsSlider = GetDlgItem(hWnd, SLIDERID);
                 int sliderPosition = SendMessage(obsSlider, TBM_GETPOS, 0, 0); //getting the positions of the slider to determine how many obstacles
                 mainMap.generateMap((double)sliderPosition / 100);
+                //setting the visible map to know the starting and ending location but nothin else
+                visibleMap.generateEmpty();
+                visibleMap.setStart(mainMap.getStart()->getxCoord(), mainMap.getStart()->getyCoord());
+                visibleMap.setEnd(mainMap.getEnd()->getxCoord(), mainMap.getEnd()->getyCoord());
                 RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
                 break;
             }
             case ROUTEBUTTONID: {
-                OutputDebugString(_T("The route button was clicked\n"));
                 //getting the solver type 
                 TCHAR solverType[50];
                 GetDlgItemText(hWnd, COMBOBOXID, solverType, 49); //TODO: see if this function could be used for the buttons
@@ -272,12 +280,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 else if (wcscmp(solverType, L"Dynamic Solver") == 0) {
                     OutputDebugString(_T("Using the dynamic solver\n"));
+                    dynRouter.updateVisible();
                 }
                 else {
                     OutputDebugString(_T("unrecognized solver\n"));
                 }
-                mainRouter.setEnd(mainMap.getEnd());
-                mainRouter.setStart(mainMap.getStart());
                 int testReturnValue = mainRouter.optimizePath();
                 if (testReturnValue == 0) {
                     OutputDebugString(_T("A path was found\n"));
@@ -299,47 +306,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
-            //adding the labels to the slider (might be a better place to put this)
-            HPEN pen = CreatePen(PS_SOLID, 1, RGB(0,0,0));
-            HPEN penPathed = CreatePen(PS_SOLID, 2, RGB(64, 0, 255));
-            SelectObject(hdc, pen);
-            HBRUSH redBrush = CreateSolidBrush(RGB(255,0,0));
-            HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0));
-            HBRUSH yellowBrush = CreateSolidBrush(RGB(255, 255, 0));
-            HBRUSH whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+            
             //TCHAR testText[] = _T("this is test of hdc");
             //TextOut(hdc, 100, 100, testText, _tcslen(testText));
             //drawing the map to the gui
             
             //TODO: work on dynamically moving the map/buttons based off size of the map
-            for (int i = 0; i < mainMap.getX(); i++) {
-                for (int j = 0; j < mainMap.getY(); j++) {
-                    int status = mainMap.getPointStatus(i, j);
-                    //changing the brush colour based off point status
-                    if (status == FREE) {
-                        SelectObject(hdc, whiteBrush);
-                    }
-                    else if (status == OBSTACLE) {
-                        SelectObject(hdc, redBrush);
-                    }
-                    else if (status == START) {
-                        SelectObject(hdc, greenBrush);
-                    }
-                    else if (status == END) {
-                        SelectObject(hdc, yellowBrush);
-                    }
-                    //choosing the pen based off if the point is in the path
-                    if (mainMap.getPointIncluded(i,j)) {
-                        SelectObject(hdc, penPathed);
-                    }
-                    else {
-                        SelectObject(hdc, pen);
-                    }
-                    //drawing the squares
-                    Rectangle(hdc,10 + (10 * i), 130 + (10 * j), 20 + (10 * i), 140 + (10 * j));
-                }
-            }
+            drawMap(hdc, &mainMap, 10);
+            //drawing the second map to show what is visible for the dynamic solver
+           
+            drawMap(hdc, &visibleMap, 300);
+
             EndPaint(hWnd, &ps);
+
         }
         break;
     case WM_DESTROY:
@@ -350,6 +329,46 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return 0;
 }
+
+void drawMap(HDC hdc, RoutingMap* map, int xOffset) {
+    //defining the pens and brushes to be used
+    HPEN pen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+    HPEN penPathed = CreatePen(PS_SOLID, 2, RGB(64, 0, 255));
+    SelectObject(hdc, pen);
+    HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0));
+    HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0));
+    HBRUSH yellowBrush = CreateSolidBrush(RGB(255, 255, 0));
+    HBRUSH whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+    for (int i = 0; i < map->getX(); i++) {
+        for (int j = 0; j < map->getY(); j++) {
+            int status = map->getPointStatus(i, j);
+            //changing the brush colour based off point status
+            if (status == FREE) {
+                SelectObject(hdc, whiteBrush);
+            }
+            else if (status == OBSTACLE) {
+                SelectObject(hdc, redBrush);
+            }
+            else if (status == START) {
+                SelectObject(hdc, greenBrush);
+            }
+            else if (status == END) {
+                SelectObject(hdc, yellowBrush);
+            }
+            //choosing the pen based off if the point is in the path
+            if (map->getPointIncluded(i, j)) {
+                SelectObject(hdc, penPathed);
+            }
+            else {
+                SelectObject(hdc, pen);
+            }
+            //drawing the squares
+            Rectangle(hdc, xOffset + (10 * i), 130 + (10 * j), xOffset+10 + (10 * i), 140 + (10 * j));
+        }
+    }
+}
+
+
 
 // Message handler for about box.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)

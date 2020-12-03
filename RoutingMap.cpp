@@ -55,6 +55,24 @@ int RoutingMap::generateMap(double obsPercent) {
 	return 0;
 }
 
+int RoutingMap::generateEmpty() {
+	//deleting any previously existing map
+	deleteMap();
+	//setting the vector to the correct length
+	positions.resize(yDim);
+	for (int i = 0; i < yDim; i++) {
+		positions[i].resize(xDim);
+	}
+	for (int i = 0; i < xDim; i++) {
+		for (int j = 0; j < yDim; j++) {
+			positions[i][j] = new Node(i, j, FREE);
+		}
+	}
+	start = nullptr;
+	end = nullptr;
+	return 0;
+}
+
 //TODO: might need to fix this function to work with pointers
 void RoutingMap::deleteMap() {
 	for (uint8_t i = 0; i < positions.size(); i++) {
@@ -99,6 +117,11 @@ int RoutingMap::getPointStatus(int x, int y){
 	return positions[x][y]->getStatus();
 }
 
+void RoutingMap::setPointStatus(int x, int y, int status)
+{
+	positions[x][y]->setStatus(status);
+}
+
 bool RoutingMap::getPointIncluded(int x, int y) {
 	return positions[x][y]->getIncluded();
 }
@@ -110,4 +133,20 @@ int RoutingMap::getX() {
 
 int RoutingMap::getY() {
 	return yDim;
+}
+
+void RoutingMap::setStart(int x, int y) {
+	if (start != nullptr) {
+		return;
+	}
+	start = positions[x][y];
+	start->setStatus(START);
+}
+
+void RoutingMap::setEnd(int x, int y) {
+	if (end != nullptr) {
+		return;
+	}
+	end = positions[x][y];
+	end->setStatus(END);
 }
