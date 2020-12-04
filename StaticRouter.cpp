@@ -120,8 +120,11 @@ void StaticRouter::tracePath()
 {
 	//starting at the end point work back from previous node pointer to set all of the flags necessary
 	Node* current = endPoint;
+	Node* previous = nullptr;
 	while (current != nullptr) {
 		current->setIncluded(true);
+		current->setNextNode(previous);
+		previous = current;
 		current = current->getPrev();
 	}
 }

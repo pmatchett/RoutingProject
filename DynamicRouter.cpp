@@ -3,9 +3,6 @@
 
 void DynamicRouter::updateVisible()
 {
-	//the following line is only there until a function is created to init the router once the map has been chosen
-	currentLocation = realMap->getStart();
-
 	for (int i = currentLocation->getxCoord() - visibleRange; i <= currentLocation->getxCoord() + visibleRange; i++) {
 		if (i<0 || i>=realMap->getX()) {
 			continue;
@@ -20,6 +17,12 @@ void DynamicRouter::updateVisible()
 	}
 }
 
+void DynamicRouter::initRouter()
+{
+	currentLocation = realMap->getStart();
+	currentLocation->setStatus(CURRENT);
+}
+
 DynamicRouter::DynamicRouter(RoutingMap* map, RoutingMap* visible, int range) : StaticRouter(visibleMap)
 {
 	visibleRange = range;
@@ -31,6 +34,23 @@ DynamicRouter::DynamicRouter(RoutingMap* map, RoutingMap* visible, int range) : 
 
 int DynamicRouter::optimizePath(HWND window)
 {
-	RedrawWindow(window, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+	initRouter();
+	
+	while (currentLocation != endPoint) {
+		int testValue = StaticRouter::optimizePath();
+		if (testValue == 1) {
+			return 1;
+		}
+		//moving the current position three spaces along
+		for (int i = 0; i < 3; i++) {
+			if (currentLocation->getNext() == nullptr) {
+				break;
+			}
+			currentLocation = currentLocation->getNext();
+		}
+		updateVisible();
+		currentLocation->setStatus(CURRENT);
+		RedrawWindow(window, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+	}
 	return 0;
 }

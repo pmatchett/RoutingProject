@@ -7,6 +7,7 @@
 #define OBSTACLE 1 
 #define START 2 
 #define END 3 
+#define CURRENT 4
 class Node {
 private:
 
@@ -15,7 +16,7 @@ private:
     //the coordinates of the node
     POINT coordinates;
     //the previous node in the generated path
-    Node* prevNode;
+    Node* prevNode, *nextNode;
     //the hueristic value for the distance from the node to the end point of the route
     double distanceWeight;
     //The sum of all heuristics, currently this is only the distance weight, but more could be added to further customize
@@ -84,4 +85,7 @@ public:
 
     void setIncluded(bool include);
 
+    void setNextNode(Node* next);
+
+    Node* getNext();
 };

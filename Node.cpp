@@ -18,6 +18,7 @@ Node::Node(int x, int y, int type)
 	distanceTravelled = 0;
 	totalHeuristic = -1;
 	prevNode = nullptr;
+	nextNode = nullptr;
 	includedPath = false;
 	//incrementing the static counter for nodes
 	Node::counter++;
@@ -107,4 +108,14 @@ bool Node::getIncluded()
 void Node::setIncluded(bool include)
 {
 	includedPath = include;
+}
+
+void Node::setNextNode(Node* next)
+{
+	nextNode = next;
+}
+
+Node* Node::getNext()
+{
+	return nextNode;
 }

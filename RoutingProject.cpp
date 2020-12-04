@@ -277,21 +277,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 GetDlgItemText(hWnd, COMBOBOXID, solverType, 49); //TODO: see if this function could be used for the buttons
                 if (wcscmp(solverType, L"Static Solver") == 0) {
                     OutputDebugString(_T("Using the static solver\n"));
+                    int testReturnValue = mainRouter.optimizePath();
+                    if (testReturnValue == 0) {
+                        OutputDebugString(_T("A path was found\n"));
+                    }
+                    else if (testReturnValue == 1) {
+                        OutputDebugString(_T("No path could be found\n"));
+                    }
                 }
                 else if (wcscmp(solverType, L"Dynamic Solver") == 0) {
                     OutputDebugString(_T("Using the dynamic solver\n"));
-                    dynRouter.updateVisible();
+                    int testReturnValue = dynRouter.optimizePath(hWnd);
+                    if (testReturnValue == 0) {
+                        OutputDebugString(_T("A path was found\n"));
+                    }
+                    else if (testReturnValue == 1) {
+                        OutputDebugString(_T("No path could be found\n"));
+                    }
                 }
                 else {
                     OutputDebugString(_T("unrecognized solver\n"));
                 }
-                int testReturnValue = mainRouter.optimizePath();
-                if (testReturnValue == 0) {
-                    OutputDebugString(_T("A path was found\n"));
-                }
-                else if (testReturnValue == 1) {
-                    OutputDebugString(_T("No path could be found\n"));
-                }
+                
                 RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
                 break;
             }
@@ -339,6 +346,7 @@ void drawMap(HDC hdc, RoutingMap* map, int xOffset) {
     HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0));
     HBRUSH yellowBrush = CreateSolidBrush(RGB(255, 255, 0));
     HBRUSH whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+    HBRUSH orangeBrush = CreateSolidBrush(RGB(255, 130, 0));
     for (int i = 0; i < map->getX(); i++) {
         for (int j = 0; j < map->getY(); j++) {
             int status = map->getPointStatus(i, j);
@@ -354,6 +362,9 @@ void drawMap(HDC hdc, RoutingMap* map, int xOffset) {
             }
             else if (status == END) {
                 SelectObject(hdc, yellowBrush);
+            }
+            else if (status == CURRENT) {
+                SelectObject(hdc, orangeBrush);
             }
             //choosing the pen based off if the point is in the path
             if (map->getPointIncluded(i, j)) {

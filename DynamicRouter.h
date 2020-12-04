@@ -10,11 +10,12 @@ private:
 	Node* currentLocation;
 
 	//update the visible map to track the current position
-	//void updateVisible();
+	void updateVisible();
+
+	void initRouter();
 
 public:
 	DynamicRouter(RoutingMap* map, RoutingMap* visible, int range);
-	void updateVisible();
 
 	//The HWND is only being passed so that I can redraw the window until multiple threads work
 	int optimizePath(HWND window);
