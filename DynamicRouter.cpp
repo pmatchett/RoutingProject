@@ -21,14 +21,16 @@ void DynamicRouter::initRouter()
 {
 	currentLocation = realMap->getStart();
 	currentLocation->setStatus(CURRENT);
+	updateVisible();
+	StaticRouter::setMapStartEnd();
 }
 
-DynamicRouter::DynamicRouter(RoutingMap* map, RoutingMap* visible, int range) : StaticRouter(visibleMap)
+DynamicRouter::DynamicRouter(RoutingMap* map, RoutingMap* visible, int range) : StaticRouter(visible)
 {
 	visibleRange = range;
 	visibleMap = visible;
 	realMap = map;
-	currentLocation = realMap->getStart();
+	currentLocation = visibleMap->getStart();
 	
 }
 
@@ -37,15 +39,20 @@ int DynamicRouter::optimizePath(HWND window)
 	initRouter();
 	
 	while (currentLocation != endPoint) {
+		StaticRouter::setStart(currentLocation);
 		int testValue = StaticRouter::optimizePath();
 		if (testValue == 1) {
 			return 1;
 		}
 		//moving the current position three spaces along
+		//TODO: set it so that only the current location will have the status and the others will return to normal
+		//	Also need to remove the previous planned routes, but not where it actually visited
+		//currentLocation->setStatus(FREE);
 		for (int i = 0; i < 3; i++) {
 			if (currentLocation->getNext() == nullptr) {
 				break;
 			}
+			OutputDebugString(_T("Advancing current location\n"));
 			currentLocation = currentLocation->getNext();
 		}
 		updateVisible();

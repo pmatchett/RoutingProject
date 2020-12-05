@@ -19,7 +19,6 @@ int StaticRouter::optimizePath()
 {
 	//resetting the previous path so that it does not mess with the new one
 	reset();
-	setMapStartEnd();
 	//making sure the start and end points are not within obstacles;
 	if (startPoint->getStatus() == OBSTACLE || endPoint->getStatus() == OBSTACLE) {
 		OutputDebugString(_T("The start or end points are invalid\n"));
@@ -50,6 +49,7 @@ int StaticRouter::optimizePath()
 		closedList[testNode->getId()] = true;
 		if (isEnd(testNode)) {
 			tracePath();
+			OutputDebugString(_T("Finished route creation\n"));
 			return 0;
 		}
 		//the end point has not been reached, so now we check the node's neighbours to find the next node of interest

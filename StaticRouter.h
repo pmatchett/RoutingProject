@@ -35,8 +35,6 @@ protected:
     void reset();
     //helper function to compare if two doubles are equal (to make up for potential innacuracies in double storage)
     bool doubleCompare(double first, double second);
-    //helper function to set the start and end points to those of the map
-    void setMapStartEnd();
     //sets the start point to the given Node
     void setStart(Node* start);
     //sets the end point to the given Node
@@ -49,6 +47,9 @@ public:
     //generates the optimal path to get from the start point to the end point using the A* algorithm
     //returns a 0 if a path was found from start to end, 1 if there was no viable path, 2 if an error
     int optimizePath();
+
+    //helper function to set the start and end points to those of the map
+    void setMapStartEnd();
 
 };
 

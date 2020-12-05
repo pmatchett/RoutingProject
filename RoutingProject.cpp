@@ -277,6 +277,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 GetDlgItemText(hWnd, COMBOBOXID, solverType, 49); //TODO: see if this function could be used for the buttons
                 if (wcscmp(solverType, L"Static Solver") == 0) {
                     OutputDebugString(_T("Using the static solver\n"));
+                    mainRouter.setMapStartEnd();
                     int testReturnValue = mainRouter.optimizePath();
                     if (testReturnValue == 0) {
                         OutputDebugString(_T("A path was found\n"));
