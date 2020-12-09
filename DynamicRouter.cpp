@@ -19,7 +19,7 @@ void DynamicRouter::updateVisible()
 
 void DynamicRouter::initRouter()
 {
-	currentLocation = realMap->getStart();
+	currentLocation = visibleMap->getStart();
 	currentLocation->setStatus(CURRENT);
 	updateVisible();
 	StaticRouter::setMapStartEnd();
@@ -40,6 +40,8 @@ int DynamicRouter::optimizePath(HWND window)
 	
 	while (currentLocation != endPoint) {
 		StaticRouter::setStart(currentLocation);
+		//setting the current location to not have a previous so that trace path does not loop forever
+		currentLocation->setPrev(nullptr);
 		int testValue = StaticRouter::optimizePath();
 		if (testValue == 1) {
 			return 1;
@@ -58,6 +60,7 @@ int DynamicRouter::optimizePath(HWND window)
 		updateVisible();
 		currentLocation->setStatus(CURRENT);
 		RedrawWindow(window, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+		Sleep(1000);
 	}
 	return 0;
 }
