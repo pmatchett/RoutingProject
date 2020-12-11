@@ -35,7 +35,7 @@ public:
 	//Sets the status of a given point on the map
 	void setPointStatus(int x, int y, int status);
 	//returns if a point is included in the final route
-	bool getPointIncluded(int x, int y);
+	int getPointIncluded(int x, int y);
 	//returns the number of nodes that are currently in the map
 	int getNumNodes();
 	//returns a vector with all of the nodes adjacent to the argument node
@@ -48,6 +48,9 @@ public:
 	//the set start and end functions will only work if the start or end are not yet defined (used for empy maps)
 	void setStart(int x, int y);
 	void setEnd(int x, int y);
+
+	//function used to remove the included points from previous route attemps
+	void removeIncluded();
 
 };
 

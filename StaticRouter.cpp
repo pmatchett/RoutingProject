@@ -122,7 +122,7 @@ void StaticRouter::tracePath()
 	Node* current = endPoint;
 	Node* next = nullptr;
 	while (current != nullptr) {
-		current->setIncluded(true);
+		current->setIncluded(1);
 		current->setNextNode(next);
 		next = current;
 		current = current->getPrev();

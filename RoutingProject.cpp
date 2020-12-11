@@ -342,6 +342,7 @@ void drawMap(HDC hdc, RoutingMap* map, int xOffset) {
     //defining the pens and brushes to be used
     HPEN pen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
     HPEN penPathed = CreatePen(PS_SOLID, 2, RGB(64, 0, 255));
+    HPEN penVisited = CreatePen(PS_SOLID, 2, RGB(255, 0, 183));
     SelectObject(hdc, pen);
     HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0));
     HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0));
@@ -368,8 +369,11 @@ void drawMap(HDC hdc, RoutingMap* map, int xOffset) {
                 SelectObject(hdc, orangeBrush);
             }
             //choosing the pen based off if the point is in the path
-            if (map->getPointIncluded(i, j)) {
+            if (map->getPointIncluded(i, j) == 1) {
                 SelectObject(hdc, penPathed);
+            }
+            else if (map->getPointIncluded(i, j) == 2) {
+                SelectObject(hdc, penVisited);
             }
             else {
                 SelectObject(hdc, pen);

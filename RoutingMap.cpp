@@ -122,7 +122,7 @@ void RoutingMap::setPointStatus(int x, int y, int status)
 	positions[x][y]->setStatus(status);
 }
 
-bool RoutingMap::getPointIncluded(int x, int y) {
+int RoutingMap::getPointIncluded(int x, int y) {
 	return positions[x][y]->getIncluded();
 }
 
@@ -149,4 +149,15 @@ void RoutingMap::setEnd(int x, int y) {
 	}
 	end = positions[x][y];
 	end->setStatus(END);
+}
+
+void RoutingMap::removeIncluded()
+{
+	for (int i = 0; i < xDim; i++) {
+		for (int j = 0; j < yDim; j++) {
+			if (positions[i][j]->getIncluded() == 1) {
+				positions[i][j]->setIncluded(0);
+			}
+		}
+	}
 }

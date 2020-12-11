@@ -28,7 +28,7 @@ private:
     //contains the distance already traveled to reach the current node
     double distanceTravelled;
     //boolean to indicate if the node is part of the final path
-    bool includedPath;
+    int includedPath;
 
 
 
@@ -81,9 +81,9 @@ public:
     //Overloading the - operator, returns the euclidean distance between two nodes
     double operator- (Node* rhs);
 
-    bool getIncluded();
+    int getIncluded();
 
-    void setIncluded(bool include);
+    void setIncluded(int include);
 
     void setNextNode(Node* next);
 

@@ -100,12 +100,12 @@ double Node::operator- (Node* rhs) {
 	return sqrt(pow(xDist, 2) + pow(yDist, 2));
 }
 
-bool Node::getIncluded()
+int Node::getIncluded()
 {
 	return includedPath;
 }
 
-void Node::setIncluded(bool include)
+void Node::setIncluded(int include)
 {
 	includedPath = include;
 }
